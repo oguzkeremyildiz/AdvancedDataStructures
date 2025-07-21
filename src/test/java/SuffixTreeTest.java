@@ -23,5 +23,7 @@ public class SuffixTreeTest {
         assertEquals(true, tree.search("anxbananabbana"));
         assertEquals(true, tree.search("abba"));
         assertEquals(false, tree.search("xbannana"));
+        tree = new SuffixTree("bananxbananabbananxbananabbananxbananab");
+        assertEquals("bananxbananabbananxbananab", tree.findLongestRepeatedSubstring());
     }
 }

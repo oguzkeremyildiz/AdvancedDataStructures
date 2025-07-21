@@ -1,3 +1,5 @@
+import Cookies.Tuple.Pair;
+
 import java.util.*;
 
 public class SuffixTree {
@@ -188,7 +190,28 @@ public class SuffixTree {
         return search(pattern, 0, root);
     }
 
+    private Pair<Integer, Integer> dfs(SuffixNode current, int count) {
+        Pair<Integer, Integer> best;
+        if (current.childCount() > 1) {
+            best = new Pair<>(current.index(), count + current.endChar() - current.startChar());
+        } else {
+            return new Pair<>(-1, Integer.MIN_VALUE);
+        }
+        for (int i = 0; i < current.childCount(); i++) {
+            Pair<Integer, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar());
+            if (p.getValue() > best.getValue()) {
+                best = p;
+            }
+        }
+        return best;
+    }
+
     public String findLongestRepeatedSubstring() {
-        return "";
+        int startIndex = dfs(root, 0).getKey();
+        StringBuilder str = new StringBuilder();
+        for (int i = startIndex; i < text.length(); i++) {
+            str.append(text.charAt(i));
+        }
+        return str.toString();
     }
 }

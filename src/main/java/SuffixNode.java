@@ -35,14 +35,6 @@ public class SuffixNode {
         this.parent = parent;
     }
 
-    public int getNode(Character character) {
-        return characterMap.get(character);
-    }
-
-    public void putNode(Character character, int value) {
-        characterMap.put(character, value);
-    }
-
     public int index() {
         return indexInText;
     }

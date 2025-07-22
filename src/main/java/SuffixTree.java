@@ -190,18 +190,16 @@ public class SuffixTree {
         return search(pattern, 0, root);
     }
 
-    private Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> dfs(SuffixNode current, int count, ArrayList<Triplet<Integer, Integer, Integer>> list) {
-        Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> best;
+    private Pair<SuffixNode, Integer> dfs(SuffixNode current, int count) {
+        Pair<SuffixNode, Integer> best;
         if (current.childCount() > 1) {
-            list.add(new Triplet<>(current.index(), current.startChar(), current.endChar()));
-            best = new Pair<>((ArrayList<Triplet<Integer, Integer, Integer>>) list.clone(), count + current.endChar() - current.startChar());
+            best = new Pair<>(current, count + current.endChar() - current.startChar());
             for (int i = 0; i < current.childCount(); i++) {
-                Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar(), list);
+                Pair<SuffixNode, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar());
                 if (p.getValue() > best.getValue()) {
                     best = p;
                 }
             }
-            list.remove(list.size() - 1);
         } else {
             return new Pair<>(null, Integer.MIN_VALUE);
         }
@@ -209,12 +207,15 @@ public class SuffixTree {
     }
 
     public String findLongestRepeatedSubstring() {
-        ArrayList<Triplet<Integer, Integer, Integer>> indexList = dfs(root, 0, new ArrayList<>()).getKey();
+        SuffixNode node = dfs(root, 0).getKey();
         StringBuilder str = new StringBuilder();
-        for (Triplet<Integer, Integer, Integer> index : indexList) {
-            for (int i = index.getB(); i < index.getC(); i++) {
-                str.append(text.charAt(index.getA() + i));
+        while (node != root) {
+            StringBuilder current = new StringBuilder();
+            for (int i = node.startChar(); i < node.endChar(); i++) {
+                current.append(text.charAt(node.index() + i));
             }
+            str.insert(0, current);
+            node = node.getParent();
         }
         return str.toString();
     }

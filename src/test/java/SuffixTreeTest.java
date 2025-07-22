@@ -13,17 +13,20 @@ public class SuffixTreeTest {
         SuffixTree tree = new SuffixTree(str.toString());
         for (int i = 0; i < 25; i++) {
             for (int j = i + 1; j < 26; j++) {
-                assertEquals(true, tree.search("bananxbananabbananxbananab".substring(0, i + 1)));
-                assertEquals(true, tree.search("bananxbananabbananxbananab".substring(i + 1, j)));
-                assertEquals(true, tree.search("bananxbananabbananxbananab".substring(j)));
+                assertTrue(tree.search("bananxbananabbananxbananab".substring(0, i + 1)));
+                assertTrue(tree.search("bananxbananabbananxbananab".substring(i + 1, j)));
+                assertTrue(tree.search("bananxbananabbananxbananab".substring(j)));
             }
         }
-        assertEquals(false, tree.search("bananxbananabka"));
-        assertEquals(false, tree.search("bak"));
-        assertEquals(true, tree.search("anxbananabbana"));
-        assertEquals(true, tree.search("abba"));
-        assertEquals(false, tree.search("xbannana"));
-        tree = new SuffixTree("bananxbananabbananxbananabbananxbananab");
-        assertEquals("bananxbananabbananxbananab", tree.findLongestRepeatedSubstring());
+        assertEquals(str.substring(0, str.length() - 13), tree.findLongestRepeatedSubstring());
+        assertFalse(tree.search("bananxbananabka"));
+        assertFalse(tree.search("bak"));
+        assertTrue(tree.search("anxbananabbana"));
+        assertTrue(tree.search("abba"));
+        assertFalse(tree.search("xbannana"));
+        tree = new SuffixTree("dklhtişhldfzkhdhşdlkzhzdfkşlhkdfşlkhtişhldfzkhdhşdlkzhzdfkfşdzlzhfilbdrzeklbysbyeşbsyerşkberyklş");
+        assertEquals("htişhldfzkhdhşdlkzhzdfk", tree.findLongestRepeatedSubstring());
+        assertTrue(tree.search("dlkzhzdfkfşdzlzhfilbdrze"));
+        assertFalse(tree.search("hşdlkzhzdfkfodzlzhfilbdrzekl"));
     }
 }

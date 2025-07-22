@@ -1,4 +1,4 @@
-import Cookies.Tuple.Pair;
+import Cookies.Tuple.*;
 
 import java.util.*;
 
@@ -190,27 +190,31 @@ public class SuffixTree {
         return search(pattern, 0, root);
     }
 
-    private Pair<Integer, Integer> dfs(SuffixNode current, int count) {
-        Pair<Integer, Integer> best;
+    private Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> dfs(SuffixNode current, int count, ArrayList<Triplet<Integer, Integer, Integer>> list) {
+        Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> best;
         if (current.childCount() > 1) {
-            best = new Pair<>(current.index(), count + current.endChar() - current.startChar());
-        } else {
-            return new Pair<>(-1, Integer.MIN_VALUE);
-        }
-        for (int i = 0; i < current.childCount(); i++) {
-            Pair<Integer, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar());
-            if (p.getValue() > best.getValue()) {
-                best = p;
+            list.add(new Triplet<>(current.index(), current.startChar(), current.endChar()));
+            best = new Pair<>((ArrayList<Triplet<Integer, Integer, Integer>>) list.clone(), count + current.endChar() - current.startChar());
+            for (int i = 0; i < current.childCount(); i++) {
+                Pair<ArrayList<Triplet<Integer, Integer, Integer>>, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar(), list);
+                if (p.getValue() > best.getValue()) {
+                    best = p;
+                }
             }
+            list.remove(list.size() - 1);
+        } else {
+            return new Pair<>(null, Integer.MIN_VALUE);
         }
         return best;
     }
 
     public String findLongestRepeatedSubstring() {
-        int startIndex = dfs(root, 0).getKey();
+        ArrayList<Triplet<Integer, Integer, Integer>> indexList = dfs(root, 0, new ArrayList<>()).getKey();
         StringBuilder str = new StringBuilder();
-        for (int i = startIndex; i < text.length(); i++) {
-            str.append(text.charAt(i));
+        for (Triplet<Integer, Integer, Integer> index : indexList) {
+            for (int i = index.getB(); i < index.getC(); i++) {
+                str.append(text.charAt(index.getA() + i));
+            }
         }
         return str.toString();
     }

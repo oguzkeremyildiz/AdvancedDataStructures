@@ -12,7 +12,9 @@ public class SuffixTree {
         int[] suffixArray = generateSuffixArray(text);
         int[] lcpArray = generateLCPArray(suffixArray, text);
         this.root = new SuffixNode();
-        buildSuffixTree(suffixArray, lcpArray);
+        if (!text.isEmpty()) {
+            buildSuffixTree(suffixArray, lcpArray);
+        }
     }
 
     private void buildSuffixTree(int[] suffixArray, int[] lcpArray) {
@@ -207,6 +209,9 @@ public class SuffixTree {
     }
 
     public String findLongestRepeatedSubstring() {
+        if (text.isEmpty()) {
+            return "";
+        }
         SuffixNode node = dfs(root, 0).getKey();
         StringBuilder str = new StringBuilder();
         while (node != root) {

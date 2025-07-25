@@ -111,6 +111,7 @@ public class KDimensionalTree<T> {
                 KDimensionalNode<T> leftMin = min(node.getLeft(), currentDimension, dimension + 1);
                 copyPoint(node.getPoints(), leftMin.getPoints());
                 node.setRight(remove(node.getLeft(), leftMin.getPoints(), dimension + 1));
+                node.setLeft(null);
             }
         } else if (comparator.compare(points[currentDimension], node.getDimension(currentDimension)) >= 0) {
             node.setRight(remove(node.getRight(), points, dimension + 1));

@@ -120,41 +120,30 @@ public class SuffixTree {
     }
 
     private static void radixSort(int[] suffixes, HashMap<Integer, Integer> rank, int k) {
+        int n = suffixes.length;
+        int[] temp = new int[n];
         for (int i = 1; i >= 0; i--) {
-            int max = Integer.MIN_VALUE;
-            for (int j = 0; j < suffixes.length; j++) {
-                if (rank.get(j) > max) {
-                    max = rank.get(j);
+            int max = 0;
+            for (int r : rank.values()) {
+                if (r > max) {
+                    max = r;
                 }
             }
-            int maxLength = 0;
-            do {
-                maxLength++;
-                max /= 10;
-            } while (max != 0);
-            for (int j = 0; j < maxLength; j++) {
-                ArrayList<Integer>[] countingSort = new ArrayList[11];
-                for (int index = 0; index < 11; index++) {
-                    countingSort[index] = new ArrayList<>();
-                }
-                for (int suffix : suffixes) {
-                    if (suffix + k * i < suffixes.length) {
-                        int value = rank.get(suffix + k * i);
-                        countingSort[(1 + ((int) (value / Math.pow(10, j)) % 10))].add(suffix);
-                    } else {
-                        countingSort[0].add(suffix);
-                    }
-                }
-                int iterate = 0;
-                for (ArrayList<Integer> integers : countingSort) {
-                    if (!integers.isEmpty()) {
-                        for (Integer integer : integers) {
-                            suffixes[iterate] = integer;
-                            iterate++;
-                        }
-                    }
-                }
+            int[] count = new int[max + 2];
+            for (int suffix : suffixes) {
+                int val = (suffix + k * i < n) ? rank.get(suffix + k * i) + 1 : 0;
+                count[val]++;
             }
+            for (int j = 1; j < count.length; j++) {
+                count[j] += count[j - 1];
+            }
+            for (int j = n - 1; j >= 0; j--) {
+                int suffix = suffixes[j];
+                int val = (suffix + k * i < n) ? rank.get(suffix + k * i) + 1 : 0;
+                temp[count[val] - 1] = suffix;
+                count[val]--;
+            }
+            System.arraycopy(temp, 0, suffixes, 0, n);
         }
     }
 

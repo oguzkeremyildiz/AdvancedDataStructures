@@ -1,7 +1,5 @@
 package Tree;
 
-import Cookies.Tuple.*;
-
 import java.util.*;
 
 public class SuffixTree {
@@ -183,18 +181,18 @@ public class SuffixTree {
         return search(pattern, 0, root);
     }
 
-    private Pair<SuffixNode, Integer> dfs(SuffixNode current, int count) {
-        Pair<SuffixNode, Integer> best;
+    private AbstractMap.SimpleEntry<SuffixNode, Integer> dfs(SuffixNode current, int count) {
+        AbstractMap.SimpleEntry<SuffixNode, Integer> best;
         if (current.childCount() > 1) {
-            best = new Pair<>(current, count + current.endChar() - current.startChar());
+            best = new AbstractMap.SimpleEntry<>(current, count + current.endChar() - current.startChar());
             for (int i = 0; i < current.childCount(); i++) {
-                Pair<SuffixNode, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar());
+                AbstractMap.SimpleEntry<SuffixNode, Integer> p = dfs(current.getChild(i), count + current.endChar() - current.startChar());
                 if (p.getValue() > best.getValue()) {
                     best = p;
                 }
             }
         } else {
-            return new Pair<>(null, Integer.MIN_VALUE);
+            return new AbstractMap.SimpleEntry<>(null, Integer.MIN_VALUE);
         }
         return best;
     }

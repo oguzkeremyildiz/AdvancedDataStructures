@@ -1,14 +1,11 @@
 package Heap;
 
-import General.Node;
+import Tree.TreeNode;
 
-public class HeapNode<T> extends Node<T> {
-
-    private final T value;
+public class HeapNode<T> extends TreeNode<T> {
 
     public HeapNode(T value) {
-        super();
-        this.value = value;
+        super(value);
     }
 
     public void add(HeapNode<T> heap) {
@@ -16,9 +13,5 @@ public class HeapNode<T> extends Node<T> {
             heap.setRight(this.left);
         }
         this.left = heap;
-    }
-
-    public T getValue() {
-        return value;
     }
 }

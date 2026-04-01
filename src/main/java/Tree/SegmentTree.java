@@ -3,7 +3,7 @@ package Tree;
 public class SegmentTree<T> {
 
     private final TypeInterface<T> typeInterface;
-    private final SegmentNode<T> root;
+    private final TreeNode<T> root;
     private final T[] array;
 
     public SegmentTree(TypeInterface<T> typeInterface, T[] array) {
@@ -12,28 +12,28 @@ public class SegmentTree<T> {
         this.root = buildSegmentTree(0, array.length - 1, array, typeInterface);
     }
 
-    private SegmentNode<T> buildSegmentTree(int min, int max, T[] array, TypeInterface<T> typeInterface) {
+    private TreeNode<T> buildSegmentTree(int min, int max, T[] array, TypeInterface<T> typeInterface) {
         if (min == max) {
-            return new SegmentNode<>(array[min]);
+            return new TreeNode<>(array[min]);
         }
-        SegmentNode<T> parent = new SegmentNode<>();
-        SegmentNode<T> left = buildSegmentTree(min, (min + max) / 2, array, typeInterface);
-        SegmentNode<T> right = buildSegmentTree((min + max) / 2 + 1, max, array, typeInterface);
+        TreeNode<T> parent = new TreeNode<>();
+        TreeNode<T> left = buildSegmentTree(min, (min + max) / 2, array, typeInterface);
+        TreeNode<T> right = buildSegmentTree((min + max) / 2 + 1, max, array, typeInterface);
         parent.setLeft(left);
         parent.setRight(right);
-        parent.setSum(typeInterface.add(left.getSum(), right.getSum()));
+        parent.setValue(typeInterface.add(left.getValue(), right.getValue()));
         return parent;
     }
 
-    private T getSumInRange(SegmentNode<T> node, int min, int max, int curMin, int curMax) {
+    private T getSumInRange(TreeNode<T> node, int min, int max, int curMin, int curMax) {
         if (min <= curMin && max >= curMax) {
-            return node.getSum();
+            return node.getValue();
         }
         if (curMax < min || curMin > max) {
             return this.typeInterface.zeroValue();
         }
-        T leftValue = getSumInRange((SegmentNode<T>) node.getLeft(), min, max, curMin, (curMax + curMin) / 2);
-        T rightValue = getSumInRange((SegmentNode<T>) node.getRight(), min, max, (curMax + curMin) / 2 + 1, curMax);
+        T leftValue = getSumInRange((TreeNode<T>) node.getLeft(), min, max, curMin, (curMax + curMin) / 2);
+        T rightValue = getSumInRange((TreeNode<T>) node.getRight(), min, max, (curMax + curMin) / 2 + 1, curMax);
         return this.typeInterface.add(leftValue, rightValue);
     }
 
@@ -41,18 +41,18 @@ public class SegmentTree<T> {
         return getSumInRange(root, min, max, 0, this.array.length - 1);
     }
 
-    private void updateValue(SegmentNode<T> node, int curMin, int curMax, int index, T value, T difference) {
+    private void updateValue(TreeNode<T> node, int curMin, int curMax, int index, T value, T difference) {
         if (curMin == curMax) {
-            node.setSum(value);
+            node.setValue(value);
             return;
         }
         int mid = (curMin + curMax) / 2;
         if (index <= mid && index >= curMin) {
-            updateValue((SegmentNode<T>) node.getLeft(), curMin, mid, index, value, difference);
-            ((SegmentNode<T>) node.getLeft()).setSum(typeInterface.add(((SegmentNode<T>) node.getLeft()).getSum(), difference));
+            updateValue((TreeNode<T>) node.getLeft(), curMin, mid, index, value, difference);
+            ((TreeNode<T>) node.getLeft()).setValue(typeInterface.add(((TreeNode<T>) node.getLeft()).getValue(), difference));
         } else if (index >= mid && index <= curMax) {
-            updateValue((SegmentNode<T>) node.getRight(), mid + 1, curMax, index, value, difference);
-            ((SegmentNode<T>) node.getRight()).setSum(typeInterface.add(((SegmentNode<T>) node.getRight()).getSum(), difference));
+            updateValue((TreeNode<T>) node.getRight(), mid + 1, curMax, index, value, difference);
+            ((TreeNode<T>) node.getRight()).setValue(typeInterface.add(((TreeNode<T>) node.getRight()).getValue(), difference));
         }
     }
 
@@ -63,6 +63,6 @@ public class SegmentTree<T> {
         T difference = this.typeInterface.subtract(value, this.array[index]);
         this.array[index] = value;
         updateValue(root, 0, this.array.length - 1, index, value, difference);
-        root.setSum(typeInterface.add(root.getSum(), difference));
+        root.setValue(typeInterface.add(root.getValue(), difference));
     }
 }

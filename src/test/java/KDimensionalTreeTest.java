@@ -1,3 +1,6 @@
+import Tree.DimensionComparator;
+import Tree.KDimensionalNode;
+import Tree.KDimensionalTree;
 import org.junit.Test;
 
 import java.util.Arrays;

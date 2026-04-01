@@ -1,3 +1,5 @@
+package Tree;
+
 public class VanEmdeBoasTree {
 
     private final VanEmdeBoasNode root;

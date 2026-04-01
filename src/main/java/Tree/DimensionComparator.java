@@ -1,3 +1,5 @@
+package Tree;
+
 import java.util.Comparator;
 
 public interface DimensionComparator<T> extends Comparator<T> {

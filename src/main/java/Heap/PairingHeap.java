@@ -1,3 +1,5 @@
+package Heap;
+
 import java.util.Comparator;
 
 public class PairingHeap<T> {
@@ -34,21 +36,21 @@ public class PairingHeap<T> {
     }
 
     private HeapNode<T> remove(HeapNode<T> node) {
-        if (node == null || node.getNext() == null) {
+        if (node == null || node.getRight() == null) {
             return node;
         }
-        HeapNode<T> second = node.getNext();
-        HeapNode<T> third = second.getNext();
-        node.setNext(null);
-        second.setNext(null);
+        HeapNode<T> second = (HeapNode<T>) node.getRight();
+        HeapNode<T> third = (HeapNode<T>) second.getRight();
+        node.setRight(null);
+        second.setRight(null);
         second = merge(node, second);
-        second.setNext(third);
+        second.setRight(third);
         return remove(second);
     }
 
     public void remove() {
         if (!isEmpty()) {
-            this.root = remove(this.root.getLeftChild());
+            this.root = remove((HeapNode<T>) this.root.getLeft());
         }
     }
 

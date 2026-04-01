@@ -1,3 +1,5 @@
+package Tree;
+
 public class SegmentTree<T> {
 
     private final TypeInterface<T> typeInterface;
@@ -30,8 +32,8 @@ public class SegmentTree<T> {
         if (curMax < min || curMin > max) {
             return this.typeInterface.zeroValue();
         }
-        T leftValue = getSumInRange(node.getLeft(), min, max, curMin, (curMax + curMin) / 2);
-        T rightValue = getSumInRange(node.getRight(), min, max, (curMax + curMin) / 2 + 1, curMax);
+        T leftValue = getSumInRange((SegmentNode<T>) node.getLeft(), min, max, curMin, (curMax + curMin) / 2);
+        T rightValue = getSumInRange((SegmentNode<T>) node.getRight(), min, max, (curMax + curMin) / 2 + 1, curMax);
         return this.typeInterface.add(leftValue, rightValue);
     }
 
@@ -46,11 +48,11 @@ public class SegmentTree<T> {
         }
         int mid = (curMin + curMax) / 2;
         if (index <= mid && index >= curMin) {
-            updateValue(node.getLeft(), curMin, mid, index, value, difference);
-            node.getLeft().setSum(typeInterface.add(node.getLeft().getSum(), difference));
+            updateValue((SegmentNode<T>) node.getLeft(), curMin, mid, index, value, difference);
+            ((SegmentNode<T>) node.getLeft()).setSum(typeInterface.add(((SegmentNode<T>) node.getLeft()).getSum(), difference));
         } else if (index >= mid && index <= curMax) {
-            updateValue(node.getRight(), mid + 1, curMax, index, value, difference);
-            node.getRight().setSum(typeInterface.add(node.getRight().getSum(), difference));
+            updateValue((SegmentNode<T>) node.getRight(), mid + 1, curMax, index, value, difference);
+            ((SegmentNode<T>) node.getRight()).setSum(typeInterface.add(((SegmentNode<T>) node.getRight()).getSum(), difference));
         }
     }
 

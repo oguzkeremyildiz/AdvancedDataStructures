@@ -1,3 +1,5 @@
+package Tree;
+
 import java.util.HashMap;
 
 public class VanEmdeBoasNode {

@@ -1,3 +1,5 @@
+import Tree.SegmentTree;
+import Tree.TypeInterface;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -1,3 +1,5 @@
+package General;
+
 public class BloomFilter<T> {
 
     private final int[] bloomFilter;

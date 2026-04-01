@@ -1,3 +1,5 @@
+import Tree.BoundIsNotValidException;
+import Tree.VanEmdeBoasTree;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

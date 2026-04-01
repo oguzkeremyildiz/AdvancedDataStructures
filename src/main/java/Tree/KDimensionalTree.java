@@ -1,3 +1,5 @@
+package Tree;
+
 public class KDimensionalTree<T> {
 
     private final int k;
@@ -16,13 +18,13 @@ public class KDimensionalTree<T> {
         T currentPoint = node.getDimension(currentDimension);
         if (comparator.compare(point, currentPoint) >= 0) {
             if (node.getRight() != null) {
-                insert(node.getRight(), points, dimension + 1);
+                insert((KDimensionalNode<T>) node.getRight(), points, dimension + 1);
             } else {
                 node.setRight(new KDimensionalNode<>(points));
             }
         } else {
             if (node.getLeft() != null) {
-                insert(node.getLeft(), points, dimension + 1);
+                insert((KDimensionalNode<T>)node.getLeft(), points, dimension + 1);
             } else {
                 node.setLeft(new KDimensionalNode<>(points));
             }
@@ -49,9 +51,9 @@ public class KDimensionalTree<T> {
             if (node.getLeft() == null) {
                 return node;
             }
-            return min(node.getLeft(), d, dimension + 1);
+            return min((KDimensionalNode<T>) node.getLeft(), d, dimension + 1);
         }
-        return comparator.compare(node, min(node.getLeft(), d, dimension + 1), min(node.getRight(), d, dimension + 1), d);
+        return comparator.compare(node, min((KDimensionalNode<T>) node.getLeft(), d, dimension + 1), min((KDimensionalNode<T>) node.getRight(), d, dimension + 1), d);
     }
 
     public KDimensionalNode<T> min(int d) {
@@ -81,9 +83,9 @@ public class KDimensionalTree<T> {
             return true;
         }
         if (comparator.compare(point, currentPoint) >= 0) {
-            return contains(node.getRight(), points, dimension + 1);
+            return contains((KDimensionalNode<T>) node.getRight(), points, dimension + 1);
         } else {
-            return contains(node.getLeft(), points, dimension + 1);
+            return contains((KDimensionalNode<T>) node.getLeft(), points, dimension + 1);
         }
     }
 
@@ -104,19 +106,19 @@ public class KDimensionalTree<T> {
             if (node.getLeft() == null && node.getRight() == null) {
                 node = null;
             } else if (node.getRight() != null) {
-                KDimensionalNode<T> rightMin = min(node.getRight(), currentDimension, dimension + 1);
+                KDimensionalNode<T> rightMin = min((KDimensionalNode<T>) node.getRight(), currentDimension, dimension + 1);
                 copyPoint(node.getPoints(), rightMin.getPoints());
-                node.setRight(remove(node.getRight(), rightMin.getPoints(), dimension + 1));
+                node.setRight(remove((KDimensionalNode<T>) node.getRight(), rightMin.getPoints(), dimension + 1));
             } else {
-                KDimensionalNode<T> leftMin = min(node.getLeft(), currentDimension, dimension + 1);
+                KDimensionalNode<T> leftMin = min((KDimensionalNode<T>) node.getLeft(), currentDimension, dimension + 1);
                 copyPoint(node.getPoints(), leftMin.getPoints());
-                node.setRight(remove(node.getLeft(), leftMin.getPoints(), dimension + 1));
+                node.setRight(remove((KDimensionalNode<T>) node.getLeft(), leftMin.getPoints(), dimension + 1));
                 node.setLeft(null);
             }
         } else if (comparator.compare(points[currentDimension], node.getDimension(currentDimension)) >= 0) {
-            node.setRight(remove(node.getRight(), points, dimension + 1));
+            node.setRight(remove((KDimensionalNode<T>) node.getRight(), points, dimension + 1));
         } else {
-            node.setLeft(remove(node.getLeft(), points, dimension + 1));
+            node.setLeft(remove((KDimensionalNode<T>) node.getLeft(), points, dimension + 1));
         }
         return node;
     }

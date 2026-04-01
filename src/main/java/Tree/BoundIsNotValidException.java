@@ -1,3 +1,5 @@
+package Tree;
+
 public class BoundIsNotValidException extends Exception {
 
    private int bound;

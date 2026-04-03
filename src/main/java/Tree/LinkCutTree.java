@@ -35,13 +35,20 @@ public class LinkCutTree<T> {
         return par;
     }
 
-    public LinkCutNode<T> findRoot(LinkCutNode<T> node) {
+    private LinkCutNode<T> findRoot(LinkCutNode<T> node) {
         access(node);
         while (node.getLeft() != null) {
             node = (LinkCutNode<T>) node.getLeft();
         }
         access(node);
         return node;
+    }
+
+    public LinkCutNode<T> findRoot(T n) {
+        if (!map.containsKey(n)) {
+            return null;
+        }
+        return findRoot(get(n));
     }
 
     public void cut(T n) {

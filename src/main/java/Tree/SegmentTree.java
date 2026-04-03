@@ -3,7 +3,7 @@ package Tree;
 public class SegmentTree<T> {
 
     private final TypeInterface<T> typeInterface;
-    private final TreeNode<T> root;
+    private final SegmentNode<T> root;
     private final T[] array;
 
     public SegmentTree(TypeInterface<T> typeInterface, T[] array) {
@@ -12,57 +12,87 @@ public class SegmentTree<T> {
         this.root = buildSegmentTree(0, array.length - 1, array, typeInterface);
     }
 
-    private TreeNode<T> buildSegmentTree(int min, int max, T[] array, TypeInterface<T> typeInterface) {
+    private SegmentNode<T> buildSegmentTree(int min, int max, T[] array, TypeInterface<T> typeInterface) {
         if (min == max) {
-            return new TreeNode<>(array[min]);
+            return new SegmentNode<>(array[min]);
         }
-        TreeNode<T> parent = new TreeNode<>();
-        TreeNode<T> left = buildSegmentTree(min, (min + max) / 2, array, typeInterface);
-        TreeNode<T> right = buildSegmentTree((min + max) / 2 + 1, max, array, typeInterface);
+        SegmentNode<T> parent = new SegmentNode<>();
+        int mid = (min + max) / 2;
+        SegmentNode<T> left = buildSegmentTree(min, mid, array, typeInterface);
+        SegmentNode<T> right = buildSegmentTree(mid + 1, max, array, typeInterface);
         parent.setLeft(left);
         parent.setRight(right);
         parent.setValue(typeInterface.add(left.getValue(), right.getValue()));
         return parent;
     }
 
-    private T getSumInRange(TreeNode<T> node, int min, int max, int curMin, int curMax) {
+    private T getSumInRange(SegmentNode<T> node, int min, int max, int curMin, int curMax) {
         if (min <= curMin && max >= curMax) {
             return node.getValue();
         }
         if (curMax < min || curMin > max) {
             return this.typeInterface.zeroValue();
         }
-        T leftValue = getSumInRange((TreeNode<T>) node.getLeft(), min, max, curMin, (curMax + curMin) / 2);
-        T rightValue = getSumInRange((TreeNode<T>) node.getRight(), min, max, (curMax + curMin) / 2 + 1, curMax);
+        pushDown(node, curMin, curMax);
+        int mid = (curMax + curMin) / 2;
+        T leftValue = getSumInRange((SegmentNode<T>) node.getLeft(), min, max, curMin, mid);
+        T rightValue = getSumInRange((SegmentNode<T>) node.getRight(), min, max, mid + 1, curMax);
         return this.typeInterface.add(leftValue, rightValue);
     }
 
     public T getSumInRange(int min, int max) {
+        if (min < 0 || max >= this.array.length || min > max) {
+            throw new IllegalArgumentException("Index out of range");
+        }
         return getSumInRange(root, min, max, 0, this.array.length - 1);
     }
 
-    private void updateValue(TreeNode<T> node, int curMin, int curMax, int index, T value, T difference) {
-        if (curMin == curMax) {
-            node.setValue(value);
-            return;
-        }
-        int mid = (curMin + curMax) / 2;
-        if (index <= mid && index >= curMin) {
-            updateValue((TreeNode<T>) node.getLeft(), curMin, mid, index, value, difference);
-            ((TreeNode<T>) node.getLeft()).setValue(typeInterface.add(((TreeNode<T>) node.getLeft()).getValue(), difference));
-        } else if (index >= mid && index <= curMax) {
-            updateValue((TreeNode<T>) node.getRight(), mid + 1, curMax, index, value, difference);
-            ((TreeNode<T>) node.getRight()).setValue(typeInterface.add(((TreeNode<T>) node.getRight()).getValue(), difference));
+    private void updateValues(SegmentNode<T> node, T value, int curMin, int curMax) {
+        int rangeLength = curMax - curMin + 1;
+        node.setValue(typeInterface.add(node.getValue(), typeInterface.multiply(rangeLength, value)));
+        if (node.getLazyValue() != null) {
+            node.setLazyValue(typeInterface.add(node.getLazyValue(), value));
+        } else {
+            node.setLazyValue(value);
         }
     }
 
-    public void updateValue(int index, T value) {
-        if (index < 0 || index >= this.array.length) {
-            throw new IllegalArgumentException("index out of range");
+    private void pushDown(SegmentNode<T> node, int curMin, int curMax) {
+        if (node.getLazyValue() != null) {
+            int mid = (curMin + curMax) / 2;
+            if (node.getLeft() != null) {
+                updateValues((SegmentNode<T>) node.getLeft(), node.getLazyValue(), curMin, mid);
+            }
+            if (node.getRight() != null) {
+                updateValues((SegmentNode<T>) node.getRight(), node.getLazyValue(), mid + 1, curMax);
+            }
+            node.setLazyValue(null);
         }
-        T difference = this.typeInterface.subtract(value, this.array[index]);
-        this.array[index] = value;
-        updateValue(root, 0, this.array.length - 1, index, value, difference);
-        root.setValue(typeInterface.add(root.getValue(), difference));
+    }
+
+    private void addValue(SegmentNode<T> node, int curMin, int curMax, int leftIndex, int rightIndex, T value) {
+        if (leftIndex > curMax || rightIndex < curMin) {
+            return;
+        }
+        if (leftIndex <= curMin && rightIndex >= curMax) {
+            updateValues(node, value, curMin, curMax);
+            return;
+        }
+        pushDown(node, curMin, curMax);
+        int mid = (curMin + curMax) / 2;
+        addValue((SegmentNode<T>) node.getLeft(), curMin, mid, leftIndex, rightIndex, value);
+        addValue((SegmentNode<T>) node.getRight(), mid + 1, curMax, leftIndex, rightIndex, value);
+        node.setValue(typeInterface.add(((SegmentNode<T>) node.getLeft()).getValue(), ((SegmentNode<T>) node.getRight()).getValue()));
+    }
+
+    public void addValue(int leftIndex, int rightIndex, T value) {
+        if (leftIndex < 0 || rightIndex >= this.array.length || leftIndex > rightIndex) {
+            throw new IllegalArgumentException("Index out of range");
+        }
+        addValue(root, 0, this.array.length - 1, leftIndex, rightIndex, value);
+    }
+
+    public void addValue(int index, T value) {
+        addValue(index, index, value);
     }
 }
